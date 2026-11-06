@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Security Master · Data Quality Scorecard</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="app">
+
+  <!-- ===== Sidebar ===== -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M4 4h7v7H4zm9 0h7v7h-7zM4 13h7v7H4zm9 3h7v4h-7z"/></svg>
+      </div>
+      <div>
+        <div class="brand-name">SECURITY MASTER</div>
+        <div class="brand-sub">DQ Scorecard</div>
+      </div>
+    </div>
+    <div class="db-pill"><span class="dot"></span>reference.db<span class="db-time" id="db-written"></span></div>
+
+    <nav class="nav" aria-label="Sections">
+      <a href="#overview" class="active"><svg viewBox="0 0 24 24" width="16" height="16"><path d="M3 3h8v8H3zm10 0h8v5h-8zM3 13h8v8H3zm10-3h8v11h-8z"/></svg>Overview</a>
+      <a href="#quality"><svg viewBox="0 0 24 24" width="16" height="16"><path d="M4 19h16v2H4zM6 10h3v7H6zm5-4h3v11h-3zm5 7h3v4h-3z"/></svg>Data Quality</a>
+      <a href="#industry"><svg viewBox="0 0 24 24" width="16" height="16"><path d="M3 21V9l6-4v4l6-4v4l6-4v16z"/></svg>Industry Breakdown</a>
+      <a href="#flagged"><svg viewBox="0 0 24 24" width="16" height="16"><path d="M5 3h2v18H5zm4 1h10l-2 4 2 4H9z"/></svg>Flagged Issuers</a>
+      <a href="#reconciliation"><svg viewBox="0 0 24 24" width="16" height="16"><path d="M7 7h10l-3-3 1.4-1.4L21 8l-5.6 5.4L14 12l3-3H7zm10 10H7l3 3-1.4 1.4L3 16l5.6-5.4L10 12l-3 3h10z"/></svg>Reconciliation</a>
+      <a href="#lineage"><svg viewBox="0 0 24 24" width="16" height="16"><path d="M5 3a3 3 0 0 1 1 5.8V11h6a2 2 0 0 0 2-2V8.8a3 3 0 1 1 2 0V9a4 4 0 0 1-4 4H6v2.2a3 3 0 1 1-2 0V8.8A3 3 0 0 1 5 3z"/></svg>Data Lineage</a>
+      <a href="#rules"><svg viewBox="0 0 24 24" width="16" height="16"><path d="M4 5h16v2H4zm0 6h10v2H4zm0 6h16v2H4zm13-7 2 2 3-3 1 1-4 4-3-3z"/></svg>Validation Rules</a>
+      <a href="#workbench"><svg viewBox="0 0 24 24" width="16" height="16"><path d="M4 4h16v4H4zm0 6h16v10H4zm3 3v2h10v-2z"/></svg>Exception Workbench<span class="nav-badge" id="nav-open"></span></a>
+    </nav>
+
+    <div class="asof">
+      <div class="asof-title">Data as of</div>
+      <dl id="asof"></dl>
+    </div>
+  </aside>
+
+  <!-- ===== Main ===== -->
+  <div class="main">
+    <header class="topbar">
+      <div class="topbar-title">
+        <span class="crumb">Data Governance / Equity Security Master</span>
+        <span class="pill pill-blue" id="quarter-pill"></span>
+      </div>
+      <label class="search">
+        <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M10 4a6 6 0 1 0 3.7 10.7l4.3 4.3 1.4-1.4-4.3-4.3A6 6 0 0 0 10 4zm0 2a4 4 0 1 1 0 8 4 4 0 0 1 0-8z"/></svg>
+        <input id="global-search" type="search" placeholder="Search ticker or company name…" autocomplete="off">
+      </label>
+      <a class="pill pill-red" href="#workbench" id="open-pill"></a>
+    </header>
+
+    <main class="content">
+
+      <!-- Overview -->
+      <section id="overview">
+        <div class="page-head">
+          <div>
+            <div class="eyebrow">Reference data QC &amp; reconciliation scorecard</div>
+            <h1>Security Master · Data Quality Scorecard <span class="pill pill-outline" id="head-quarter"></span></h1>
+            <p class="meta" id="meta-line"></p>
+          </div>
+        </div>
+        <div class="kpis" id="kpis"></div>
+      </section>
+
+      <!-- Data quality -->
+      <section id="quality" class="grid-2-1">
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <h2>Pass rate by data-quality dimension</h2>
+              <p class="sub">Each bar is one rule, counted on the table named beside it.</p>
+            </div>
+          </div>
+          <div id="dimensions" class="dims"></div>
+        </div>
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <h2>Check (b) results vs filings</h2>
+              <p class="sub" id="donut-sub"></p>
+            </div>
+          </div>
+          <div class="donut-wrap" id="donut"></div>
+          <ul class="stat-list" id="side-stats"></ul>
+        </div>
+      </section>
+
+      <!-- Industry -->
+      <section id="industry" class="grid-3">
+        <div class="card"><div class="card-head"><div><h2>Revenue coverage by industry</h2><p class="sub">Share of 10-K filings</p></div></div><div id="ind-revenue"></div></div>
+        <div class="card"><div class="card-head"><div><h2>Check (b) by industry</h2><p class="sub">Filings where all three values are reported</p></div></div><div id="ind-checkb"></div></div>
+        <div class="card"><div class="card-head"><div><h2>Pass all checks, by exchange</h2><p class="sub">Listed companies with a 10-K</p></div></div><div id="ind-exchange"></div></div>
+      </section>
+
+      <!-- Flagged issuers -->
+      <section id="flagged" class="card">
+        <div class="card-head">
+          <div>
+            <h2>Flagged issuers <span class="pill pill-red" id="flag-combined"></span></h2>
+            <p class="sub">Listed companies with at least one failure flag, ranked by total assets. Click a row for its check values; click a header to sort.</p>
+          </div>
+          <div class="chips" id="exchange-chips"></div>
+        </div>
+        <div class="table-wrap"><table class="table" id="flag-table"></table></div>
+        <div class="table-foot"><span id="flag-count"></span><button class="link-btn" id="flag-toggle"></button></div>
+      </section>
+
+      <!-- Reconciliation -->
+      <section id="reconciliation" class="card">
+        <div class="card-head">
+          <div>
+            <h2>SEC vs Nasdaq Trader reconciliation</h2>
+            <p class="sub">Category × reason for every reconciled ticker (ticker_review). Filters apply to both tables.</p>
+          </div>
+        </div>
+        <div class="filters" id="recon-filters"></div>
+        <div class="table-wrap"><table class="table matrix" id="recon-matrix"></table></div>
+        <h3 class="table-title" id="recon-title"></h3>
+        <div class="table-wrap tall"><table class="table" id="recon-table"></table></div>
+      </section>
+
+      <!-- Lineage -->
+      <section id="lineage" class="card">
+        <div class="card-head">
+          <div>
+            <h2>Data lineage</h2>
+            <p class="sub">Raw sources → scripts → tables. Row counts are read from reference.db and output/.</p>
+          </div>
+        </div>
+        <div class="flow" id="flow"></div>
+        <h3 class="table-title">Rules applied</h3>
+        <div class="rules-applied" id="rules-applied"></div>
+        <details class="lineage-details">
+          <summary>All tables and files</summary>
+          <div class="table-wrap"><table class="table" id="lineage-table"></table></div>
+        </details>
+      </section>
+
+      <!-- Validation rules -->
+      <section id="rules" class="card">
+        <div class="card-head">
+          <div>
+            <h2>Core data-quality validation rules</h2>
+            <p class="sub">Assertions run by the pipeline, with entities tested and failures found.</p>
+          </div>
+        </div>
+        <div class="table-wrap"><table class="table" id="rules-table"></table></div>
+      </section>
+
+      <!-- Workbench -->
+      <section id="workbench" class="card">
+        <div class="card-head">
+          <div>
+            <h2>Exception workbench <span class="pill pill-red" id="wb-open"></span></h2>
+            <p class="sub">Edit my_verdict / my_note and save. Rows are saved by key into the CSV; nothing else in the file changes.</p>
+          </div>
+          <button class="btn btn-primary" id="wb-save" disabled>Save verdicts</button>
+        </div>
+        <div class="filters" id="wb-filters"></div>
+        <div class="progress"><div class="progress-bar" id="wb-progress"></div></div>
+        <p class="sub" id="wb-progress-text"></p>
+        <div class="table-wrap tall"><table class="table" id="wb-table"></table></div>
+        <div class="table-foot"><span id="wb-count"></span><span id="wb-dirty"></span></div>
+      </section>
+
+      <footer class="foot" id="foot"></footer>
+    </main>
+  </div>
+</div>
+
+<!-- detail drawer -->
+<div class="drawer-backdrop" id="drawer-backdrop" hidden></div>
+<aside class="drawer" id="drawer" aria-hidden="true">
+  <div class="drawer-head">
+    <div><div class="eyebrow" id="drawer-eyebrow"></div><h2 id="drawer-title"></h2></div>
+    <button class="icon-btn" id="drawer-close" aria-label="Close">×</button>
+  </div>
+  <div id="drawer-body"></div>
+</aside>
+
+<div class="toast" id="toast" role="status" hidden></div>
+<script src="app.js"></script>
+</body>
+</html>
